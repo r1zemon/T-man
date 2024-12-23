@@ -1,3 +1,34 @@
+<?php
+// Koneksi ke database
+session_start();  // Tambahkan ini di baris paling atas
+// Koneksi ke database
+$conn = new mysqli("localhost", "root", "", "t-man");
+
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+
+// Fungsi untuk mendapatkan destinasi berdasarkan kategori
+function getDestinationsByCategory($conn, $category) {
+    $sql = "SELECT * FROM destinasi_wisata WHERE kategori = ? ORDER BY created_at DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $category);
+    $stmt->execute();
+    return $stmt->get_result();
+}
+
+function getDestinationsBySearch($conn, $searchTerm) {
+  $sql = "SELECT * FROM destinasi_wisata WHERE judul LIKE ? ORDER BY created_at DESC";
+  $searchTerm = "%" . $searchTerm . "%";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $searchTerm);
+  $stmt->execute();
+  return $stmt->get_result();
+}
+
+$categories = ['Sejarah', 'Makanan', 'Alam', 'Hiburan'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,182 +48,100 @@
     <div class="bx bx-menu" id="menu-icon"></div>
 
     <ul class="navbar">
-        <li><a href="homepage.php">Home</a></li>
-        <li><a href="destination.php">Destinasi</a></li>
-        <li><a href="ticket.php">Tiket</a></li>
-        <li><a href="akun.php">Akun</a></li>
-    </ul>
+      <li><a href="homepage.php">Home</a></li>
+      <li><a href="destination.php">Destinasi</a></li>
+      <li><a href="ticket.php">Tiket</a></li>
+      <?php if (isset($_SESSION['username'])): ?>
+          <li><a href="akun.php"><?php echo $_SESSION['username']; ?></a></li>
+      <?php else: ?>
+          <li><a href="akun.php">Akun</a></li>
+      <?php endif; ?>
+  </ul>
 </header>
     <section class="section__container header__container">
       <div class="header__image__container">
         <div class="header__content">
-          <h1>Enjoy Your Dream Vacation</h1>
-          <p>Book Hotels, Flights and stay packages at lowest price.</p>
+          <h1>Nikmati Sleman, yang Nyaman!</h1>
+          <p>Pesan tiket destinasi anda sekarang juga!.</p>
         </div>
         <div class="booking__container">
-          <form>
-            <div class="form__group">
-              <div class="input__group">
-                <input type="text" />
-                <label>Location</label>
-              </div>
-              <p>Where are you going?</p>
-            </div>
-            <div class="form__group">
-              <div class="input__group">
-                <input type="text" />
-                <label>Check In</label>
-              </div>
-              <p>Add date</p>
-            </div>
-            <div class="form__group">
-              <div class="input__group">
-                <input type="text" />
-                <label>Check Out</label>
-              </div>
-              <p>Add date</p>
-            </div>
-            <div class="form__group">
-              <div class="input__group">
-                <input type="text" />
-                <label>Guests</label>
-              </div>
-              <p>Add guests</p>
-            </div>
-          </form>
-          <button class="btn"><i class="ri-search-line"></i></button>
-        </div>
+  <form method="GET" action="">
+    <div class="form__group">
+      <div class="input__group">
+        <input type="text" name="search" id="searchInput"/>
+        <label>Lokasi</label>
+      </div>
+      <p>Kemana kamu mau pergi?</p>
+    </div>
+  </form>
+  <button class="btn" onclick="searchDestination()"><i class="ri-search-line"></i></button>
+</div>
       </div>
     </section>
 
     <section class="section__container popular__container">
-      <h2 class="section__header">Sejarah</h2>
-      <div class="popular__grid">
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Plaza Hotel</h4>
-              <h4>$499</h4>
-            </div>
-            <p>New York City, USA</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Ritz Paris</h4>
-              <h4>$549</h4>
-            </div>
-            <p>Paris, France</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Peninsula</h4>
-              <h4>$599</h4>
-            </div>
-            <p>Hong Kong</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Atlantis The Palm</h4>
-              <h4>$449</h4>
-            </div>
-            <p>Dubai, United Arab Emirates</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Ritz-Carlton</h4>
-              <h4>$649</h4>
-            </div>
-            <p>Tokyo, Japan</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Marina Bay Sands</h4>
-              <h4>$549</h4>
-            </div>
-            <p>Singapore</p>
-          </div>
-        </div>
-      </div>
-      <h2 class="section__header"><br>Makanan</h2>
-      <div class="popular__grid">
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Plaza Hotel</h4>
-              <h4>$499</h4>
-            </div>
-            <p>New York City, USA</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Ritz Paris</h4>
-              <h4>$549</h4>
-            </div>
-            <p>Paris, France</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Peninsula</h4>
-              <h4>$599</h4>
-            </div>
-            <p>Hong Kong</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Atlantis The Palm</h4>
-              <h4>$449</h4>
-            </div>
-            <p>Dubai, United Arab Emirates</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambanan.jpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>The Ritz-Carlton</h4>
-              <h4>$649</h4>
-            </div>
-            <p>Tokyo, Japan</p>
-          </div>
-        </div>
-        <div class="popular__card">
-          <img src="img/prambananjpg" alt="popular hotel" />
-          <div class="popular__content">
-            <div class="popular__card__header">
-              <h4>Marina Bay Sands</h4>
-              <h4>$549</h4>
-            </div>
-            <p>Singapore</p>
-          </div>
-        </div>
-      </div>
-    </section>
+<?php 
+$categories = ['Sejarah', 'Makanan', 'Alam', 'Hiburan'];
+
+// Cek apakah ada parameter pencarian
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    $searchResults = getDestinationsBySearch($conn, $_GET['search']);
+    
+    echo '<h2 class="section__header">Hasil Pencarian</h2>';
+    echo '<div class="popular__grid">';
+    
+    if ($searchResults->num_rows > 0) {
+        while($row = $searchResults->fetch_assoc()) {
+            echo '<div class="popular__card" onclick="window.location.href=\'destination_detail.php?id=' . $row['id'] . '\'" style="cursor: pointer;">
+                <img src="' . $row['photo1'] . '" alt="' . $row['judul'] . '" />
+                <div class="popular__content">
+                    <div class="popular__card__header">
+                        <h4>' . $row['judul'] . '</h4>
+                        <h4>' . $row['harga'] . '</h4>
+                    </div>
+                    <p>' . $row['lokasi_singkat'] . '</p>
+                </div>
+            </div>';
+        }
+    } else {
+        echo '<p>Tidak ada destinasi yang ditemukan.</p>';
+    }
+    echo '</div>';
+} else {
+    // Jika tidak ada pencarian, tampilkan semua kategori
+    foreach($categories as $index => $category) {
+        echo '<h2 class="section__header">' . $category . '</h2>';
+        echo '<div class="popular__grid">';
+        
+        $result = getDestinationsByCategory($conn, $category);
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                echo '<div class="popular__card" onclick="window.location.href=\'destination_detail.php?id=' . $row['id'] . '\'" style="cursor: pointer;">
+                    <img src="' . $row['photo1'] . '" alt="' . $row['judul'] . '" />
+                    <div class="popular__content">
+                        <div class="popular__card__header">
+                            <h4>' . $row['judul'] . '</h4>
+                            <h4>' . $row['harga'] . '</h4>
+                        </div>
+                        <p>' . $row['lokasi_singkat'] . '</p>
+                    </div>
+                </div>';
+            }
+        } else {
+            echo '<p>Belum ada destinasi untuk kategori ini.</p>';
+        }
+        echo '</div>';
+        
+        // Tambahkan break line jika bukan kategori terakhir
+        if ($index !== array_key_last($categories)) {
+            echo '<br>';
+        }
+    }
+}
+?>
+</section>
+
+    
 
     <!-- <section class="client">
       <div class="section__container client__container">
@@ -223,13 +172,13 @@
       </div>
     </section> -->
 
-    <section class="section__container">
+    <!-- <section class="section__container">
       <div class="reward__container">
         <p>100+ discount codes</p>
         <h4>Join rewards and discover amazing discounts on your booking</h4>
         <button class="reward__btn">Join Rewards</button>
       </div>
-    </section>
+    </section> -->
 
     <!--Footer-->
 <section id="contact">

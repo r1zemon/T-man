@@ -104,6 +104,18 @@ form {
   color: #333;
 }
 
+.login-admin {
+  margin-top: auto; /* Mendorong elemen ke bawah */
+  text-align: center; /* Agar teks berada di tengah horizontal */
+  padding: 10px;
+  background-color: #f4f4f4; /* Warna latar belakang opsional */
+}
+
+.login-admin a {
+  text-decoration: none;
+  color: #007bff;
+}
+
 .btn {
   width: 100%;
   height: 50px;

@@ -1,10 +1,25 @@
+<?php
+session_start();
+
+// Set header untuk mencegah caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// Cek apakah user sudah login
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><T-man></T-man></title>
-    <link rel="stylesheet" type="text/css" href="css/style.css"
+    <title><T-man></title>
+    <link rel="stylesheet" type="text/css" href="css/index.css"
 
     <link rel="stylesheet"
   href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -25,11 +40,17 @@
         <div class="bx bx-menu" id="menu-icon"></div>
 
         <ul class="navbar">
-            <li><a href="#home">Home</a></li>
-            <li><a href="destination.php">Destinasi</a></li>
-            <li><a href="ticket.php">Tiket</a></li>
-            <li><a href="akun.php">Akun</a></li>
-        </ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="destination.php">Destinasi</a></li>
+    <li><a href="ticket.php">Tiket</a></li>
+    <!-- Menampilkan username jika sudah login -->
+    <?php if (isset($_SESSION['username'])): ?>
+        <li><a href="akun.php"><?php echo $_SESSION['username']; ?></a></li>
+    <?php else: ?>
+        <li><a href="akun.php">Akun</a></li>
+    <?php endif; ?>
+</ul>
+
     </header>
 
     <!--Home section-->

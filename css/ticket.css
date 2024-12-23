@@ -1,0 +1,39 @@
+.ticket-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.ticket-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 15px;
+    background: #4CAF50;
+    color: white;
+    font-size: 14px;
+}
+
+.ticket-details p {
+    margin: 8px 0;
+    color: #666;
+}
+
+.ticket-details strong {
+    color: #333;
+}
